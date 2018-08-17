@@ -9,7 +9,7 @@ open_file = open('sample.txt','r')
 emails = map(lambda s: s.strip(),open_file.readlines())
 
 fieldnames = ['email','name_given_fc','name_first_fc','name_last_fc','name_prefix_fc','name_suffix_fc','name_nickname_fc','fullname_fc','ageRange_fc','gender_fc','locations_fc','Title_fc','Organization_fc','Twitter_fc',
-                'Linkedin_fc','Facebook_fc','Bio_fc','Avatar_fc','website_fc','Details_fc','birthday_year_fc','birthday_month_fc','birthday_day_fc','agerange_2_fc','age_fc',
+                'Linkedin_fc','Facebook_fc','Bio_Facebook_fc','Bio_Twitter_fc','Bio_Linkedin_fc','Avatar_fc','website_fc','Details_fc','birthday_year_fc','birthday_month_fc','birthday_day_fc','agerange_2_fc','age_fc',
                 'locations_label_fc','locations_city_fc','locations_region_fc','locations_regionCode_fc','locations_country_fc','locations_countryCode_fc',
                 'locations_formatted_fc','education_name_fc','education_degree_fc','education_endYear_fc','topics_1_fc','topics_2_fc','topics_3_fc','topics_4_fc','topics_5_fc','topics_6_fc','topics_7_fc','topics_8_fc','topics_9_fc']
 
@@ -210,14 +210,20 @@ def get_data(response,email):
         for profiles in response['socialProfiles']:
             if profiles['typeName'] == 'Facebook':
                 dict_of_data['Facebook_fc'] = profiles['url']
+                if 'bio' in profiles:
+                    dict_of_data['Bio_Facebook_fc'] = profiles['bio']
             if profiles['typeName'] == 'Twitter':
                 dict_of_data['Twitter_fc'] = profiles['url']
+                if 'bio' in profiles:
+                    dict_of_data['Bio_Twitter_fc'] = profiles['bio']
             if profiles['typeName'] == 'LinkedIn':
                 dict_of_data['Linkedin_fc'] = profiles['url']
+                if 'bio' in profiles:
+                    dict_of_data['Bio_Linkedin_fc'] = profiles['bio']
 
-            for elem in profiles:
-                if 'bio' in elem:
-                    dict_of_data['Bio_fc'] = profiles[elem]
+            # for elem in profiles:
+            #     if 'bio' in elem:
+            #         dict_of_data['Bio_fc'] = profiles[elem]
                     
     if 'education' in response:
         for education in response['education']:
