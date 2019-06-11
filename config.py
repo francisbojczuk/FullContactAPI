@@ -7,12 +7,13 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = os.getenv('SECRET_KEY') or 'asldkfapoop234.sdf@344'
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    
 
 
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
-
+    UPLOAD_FOLDER = '/path/to/the/uploads'
 
 class StagingConfig(Config):
     """Configurations for Staging."""

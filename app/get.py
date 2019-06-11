@@ -2,20 +2,26 @@ import os
 
 from datetime import datetime, timedelta
 import time
-import requests
+import urllib.request, json
 
 class FullContactAdaptiveClient(object):
     REQUEST_LATENCY=0.2
+    remaining = 10
+    reset = 20
 
     def __init__(self):
         self.next_req_time = datetime.fromtimestamp( 86400)
 
-    def call_fullcontact(self, email):
+    def call_fullcontact(self, email,api_key):
         self._wait_for_rate_limit()
-        r = requests.get('https://api.fullcontact.com/v2/person.json',
-                         params={'email': email, 'apiKey': '4GmnLW6YAs89iZS9duUtWE9BXOxYcc1C'})
-        self._update_rate_limit(r.headers)
-        return r.json()
+        req = urllib.request.Request('https://api.fullcontact.com/v3/person.enrich')
+        req.add_header('Authorization', 'Bearer {}'.format(api_key))
+        data = json.dumps({
+            "email": "{}".format(email)
+        })
+        response = urllib.request.urlopen(req, data.encode())
+        self._update_rate_limit()
+        return response.read()
 
     def _wait_for_rate_limit(self):
         now = datetime.now()
@@ -23,9 +29,7 @@ class FullContactAdaptiveClient(object):
             t = self.next_req_time - now
             time.sleep(t.total_seconds())
 
-    def _update_rate_limit(self, hdr):
-        remaining = float(hdr['X-Rate-Limit-Remaining'])
-        reset = float(hdr['X-Rate-Limit-Reset'])
+    def _update_rate_limit(self):
         spacing = reset / (1.0 + remaining)
         delay = spacing - self.REQUEST_LATENCY
         self.next_req_time = datetime.now() + timedelta(seconds=delay)

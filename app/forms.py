@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError, Email
 
-class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
-    api_key = StringField('API_Key', validators=[DataRequired()])
-    remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Start')
+class IndexForm(FlaskForm):
+    file = StringField('File:', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    api_key = StringField('API_KEY', validators=[DataRequired()])
+    submit = SubmitField('Submit')
