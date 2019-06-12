@@ -8,3 +8,4 @@ app.pyPipfile
 app.py
 Pipfile.lock
 Pipfile
+app/tmp/

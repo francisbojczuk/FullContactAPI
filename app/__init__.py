@@ -17,20 +17,21 @@ def create_app(config_name):
     	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     ###########################################
-    column_names = ['twitter','phone','fullName','ageRange','gender','location','title','organization',
-                                'linkedin','facebook','bio','avatar','website','employment_name','employment_domain','employment_status',
-                                'employment_title','employment_start','employment_end','interests_name','interests_id',
-                                'interests_affinity','interests_parrentIds','interests_category','profile_twitter_info',
-                                'photos_label','photos_value','urls_lable','urls_value','name_given','name_family','name_middle','name_prefix',
-                                'name_suffix','name_nickname','birthday', 'age_range','age_value','gender','location_label',
-                                'location_city','location_region','location_reg_code','location_country','location_coutry_code','location_formatted',
-                                'education_name','education_degree','education_end','email_value','email_md5','email_sha256','topics','keypeople',
-                                'dataAddOns','updated']
-    def get_csv_row(x):
+    column_names = ['email','twitter','phone','fullName','ageRange','gender','location','title','organization',
+                    'linkedin','facebook','bio','avatar','website','employment_name','employment_domain','employment_status',
+                    'employment_title','employment_start','employment_end','interests_name','interests_id',
+                    'interests_affinity','interests_parrentIds','interests_category','profile_twitter_info',
+                    'photos_label','photos_value','urls_lable','urls_value','name_given','name_family','name_middle','name_prefix',
+                    'name_suffix','name_nickname','birthday', 'age_range','age_value','gender','location_label',
+                    'location_city','location_region','location_reg_code','location_country','location_coutry_code','location_formatted',
+                    'education_name','education_degree','education_end','email_md5','email_sha256','topics','keypeople',
+                    'dataAddOns','updated']
+    def get_csv_row(x,email):
         ret = []
         for column in column_names:
             ret.append(x.get(column, ''))
         try:
+            ret[0] = email
             if x.get('details'):
                 if x.get('details').get('employment'):
                     ret[14] = x.get('details').get('employment').get('name','')
@@ -122,14 +123,17 @@ def create_app(config_name):
                 flash('Allowed file types are txt or csv')
                 return redirect(request.url)
                 
-            email=form.email.data
+           
             api_key=form.api_key.data
             if form.validate_on_submit():
                 
                 ##################################
                 
-                with open(os.path.join(current_dir,"tmp",filename)) as csv_file:
-                    csv_reader = csv.reader(csv_file, delimiter=',')
+                with open(os.path.join(current_dir,"tmp",filename)) as input_file, open('output.csv','w') as output:
+                    csv_reader = csv.reader(input_file, delimiter=',')
+                    csv_out = csv.writer(output,delimiter=',')
+                    csv_out.writerow(column_names)
+
                     line_count = 0
                     for row in csv_reader:
                         if row:
@@ -150,9 +154,9 @@ def create_app(config_name):
 
                                 x = response.read().decode('utf-8')
                                 xx = json.loads(x)
-                                f = csv.writer(open("output.csv", "w"))
-                                f.writerow(column_names)
-                                f.writerow(get_csv_row(xx))
+                                # f = csv.writer(open("output.csv", "w"))
+                                # f.writerow(column_names)
+                                csv_out.writerow(get_csv_row(xx, email))
                             except:
                                 pass
                     flash('Hello, Success!')  
