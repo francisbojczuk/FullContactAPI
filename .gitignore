@@ -4,4 +4,7 @@ test.csv
 ex.py
 output.csv test.csv
 *.csv
+app.pyPipfile
 app.py
+Pipfile.lock
+Pipfile
