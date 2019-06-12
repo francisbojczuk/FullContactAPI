@@ -27,11 +27,12 @@ def create_app(config_name):
                     'addon_description', 'addon_docLink','updated']
                     
     def get_csv_row(x,email):
-        ret = []
+        ret = []    
         for column in column_names:
             ret.append(x.get(column, ''))
-    
         ret[0] = email
+        if len(x) == 0:
+            return ret
         if x.get('details'):
             try:
                 if x.get('details').get('name'):
@@ -41,16 +42,26 @@ def create_app(config_name):
                     ret[16] = x.get('details').get('name').get('prefix','')
                     ret[17] = x.get('details').get('name').get('suffix','')
                     ret[18] = x.get('details').get('name').get('nickname','')
+            except ValueError as e:
+                print("Value error in x.get('details').get('name'):{}".format(email))
+            try:
                 if x.get('details').get('age'):
                     ret[19] = x.get('details').get('age').get('birthday','')
                     ret[20] = x.get('details').get('age').get('range','')
                     ret[21] = x.get('details').get('age').get('value','')
+            except ValueError as e:
+                print("Value error in x.get('details').get('age'):{}".format(email))
+            try:
                 if x.get('details').get('gender'):
                     ret[22] = x.get('details').get('gender','')
-                
+            except ValueError as e:
+                print("Value error in x.get('details').get('gender'):{}".format(email))
+            try:
                 ret[23] = x.get('details').get('phones','')
                 ret[24] = x.get('details').get('profiles','')
-                                    
+            except ValueError as e:
+                print("Value error in x.get('details').get('phone&profile'):{}".format(email))
+            try:                    
                 if x.get('details').get('employment'):
                     ret[25] = x.get('details').get('employment').get('name','')
                     ret[26] = x.get('details').get('employment').get('domain','')
@@ -58,18 +69,29 @@ def create_app(config_name):
                     ret[28] = x.get('details').get('employment').get('title','')
                     ret[29] = x.get('details').get('employment').get('start','')
                     ret[30] = x.get('details').get('employment').get('end','')
+            except ValueError as e:
+                print("Value error in x.get('details').get('employment'):{}".format(email))
+            try:
                 if x.get('details').get('photos'):
                     ret[31] = x.get('details').get('photos').get('label','')
                     ret[32] = x.get('details').get('photos').get('value','')
+            except ValueError as e:
+                print("Value error in x.get('details').get('photos'):{}".format(email))
+            try:
                 if x.get('details').get('education'):
                     for education in x.get('details').get('education'):
                         ret[33] = ret[33] + ' | ' + str(education.get('name',''))
                         ret[34] = ret[34] + ' | ' + str(education.get('degree',''))
                         ret[35] = ret[35] + ' | ' + str(education.get('end',''))
+            except ValueError as e:
+                print("Value error in x.get('details').get('education'):{}".format(email))
+            try:
                 if x.get('details').get('urls'):
                     ret[36] = x.get('details').get('urls').get('label','')
                     ret[37] = x.get('details').get('urls').get('value','')
-
+            except ValueError as e:
+                print("Value error in x.get('details').get('urls'):{}".format(email))
+            try:
                 if x.get('details').get('interests'):
                     ret[38] = x.get('details').get('interests').get('name','')
                     ret[39] = x.get('details').get('interests').get('id','')
@@ -77,13 +99,17 @@ def create_app(config_name):
                     ret[41] = x.get('details').get('interests').get('parentIds','')
                     ret[42] = x.get('details').get('interests').get('category','')
                 ret[43] = x.get('details').get('topics','')
+            except ValueError as e:
+                print("Value error in x.get('details').get('interests'):{}".format(email))
+            try:
                 if x.get('details').get('keyPeople'):
                     for keypeople in x.get('details').get('keyPeople'):
                         ret[44] =ret[44] + ' | ' + str(keypeople.get('fullName'))
                         ret[45] =ret[45] + ' | ' + str(keypeople.get('title'))
                         ret[46] =ret[46] + ' | ' + str(keypeople.get('avatar'))
-            except:
-                pass
+            except ValueError as e:
+                print("Value error in x.get('details').get('keypeople'):{}".format(email))
+                
 
         if x.get('dataAddOns'):
             for dataAdd in x.get('dataAddOns'):
@@ -94,9 +120,9 @@ def create_app(config_name):
                     ret[50] =ret[50] + ' | ' + str(dataAdd.get('applied'))
                     ret[51] =ret[51] + ' | ' + str(dataAdd.get('description'))
                     ret[52] =ret[52] + ' | ' + str(dataAdd.get('docLink'))
-                except:
-                    pass
-        print(ret)    
+                except ValueError as e:
+                    print("Value error in x.get('details').get('dataAddOns'):{}".format(email))
+        # print(ret)    
         return ret
     ###########################################
 
@@ -153,14 +179,26 @@ def create_app(config_name):
                                 })
 
                                 response = urllib.request.urlopen(req, data.encode())
-
+                            
                                 x = response.read().decode('utf-8')
                                 xx = json.loads(x)
                                 # f = csv.writer(open("output.csv", "w"))
                                 # f.writerow(column_names)
                                 csv_out.writerow(get_csv_row(xx, email))
-                            except:
-                                pass
+                            except urllib.error.HTTPError as e:
+                                print('API HTTPrequest handling error{0}:{1}'.format(e.getcode(), email))
+                                if e.getcode() == 403:
+                                    time.sleep(300)
+                                    print('rised x-limit, so please for a while...')
+                                xx = {}
+                                csv_out.writerow(get_csv_row(xx, email))
+                            except urllib.error.URLError as e:
+                                # Not an HTTP-specific error (e.g. connection refused)
+                                # ...
+                                print('URLError: {0}:{1}'.format(e.reason, email))
+                                xx = {}
+                                csv_out.writerow(get_csv_row(xx, email))           
+                                
                     flash('Hello, Success!')  
                     
                 ##################################
