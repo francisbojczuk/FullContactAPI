@@ -1,3 +1,7 @@
 .vscode/
 __pycache__/
 test.csv
+ex.py
+output.csv test.csv
+*.csv
+app.py

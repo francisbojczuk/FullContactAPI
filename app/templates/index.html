@@ -28,8 +28,6 @@
                 {{ form.errors }}
             {% endif %}
 
-            
-
             <form  action="" method="post" role="form" enctype="multipart/form-data">
                 {{ form.csrf_token }}
 
@@ -45,10 +43,6 @@
                 </fieldset>
 
                 <div class="form-group">
-                   
-                    <label for="email">Email:</label>
-                    {{ form.email(class_='form-control') }}
-                        <br>
                     <label for="api-key">API_KEY:</label>
                     {{ form.api_key(class_='form-control') }}
                 </div>

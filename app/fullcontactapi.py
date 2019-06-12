@@ -21,7 +21,7 @@ class FullContactAdaptiveClient(object):
         })
         response = urllib.request.urlopen(req, data.encode())
         self._update_rate_limit()
-        return response.read()
+        return response.read().decode('utf-8')
 
     def _wait_for_rate_limit(self):
         now = datetime.now()

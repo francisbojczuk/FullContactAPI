@@ -13,7 +13,6 @@ class Config(object):
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
-    UPLOAD_FOLDER = '/path/to/the/uploads'
 
 class StagingConfig(Config):
     """Configurations for Staging."""
