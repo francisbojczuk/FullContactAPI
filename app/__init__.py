@@ -212,7 +212,7 @@ def create_app(config_name):
                     for row in csv_reader:
                         if row:
                             email = row[0]
-                            line_count += 1
+                            # line_count += 1
                             # if line_count%100 == 0:
                             #     time.sleep(30)
                             try: 
