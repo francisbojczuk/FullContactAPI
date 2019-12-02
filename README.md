@@ -1,6 +1,6 @@
-##FullContactAPI Scraper
+## FullContactAPI Scraper
 
-###project setup
+### project setup
   - git clone from this repository.
 
   - pip install -r requirements.txt
